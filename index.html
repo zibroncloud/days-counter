@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contatore Giorni Vissuti</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .title {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ef4444;
+            margin-bottom: 2rem;
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: #9ca3af;
+            margin-bottom: 3rem;
+        }
+        
+        .input-section {
+            margin-bottom: 3rem;
+        }
+        
+        .date-input {
+            background-color: #1f2937;
+            border: 2px solid #ef4444;
+            color: #fca5a5;
+            padding: 1rem 2rem;
+            font-size: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .date-input:focus {
+            outline: none;
+            border-color: #f87171;
+        }
+        
+        .start-btn {
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .start-btn:hover {
+            background-color: #b91c1c;
+            transform: scale(1.05);
+        }
+        
+        .start-btn:disabled {
+            background-color: #374151;
+            color: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .counter-section {
+            display: none;
+        }
+        
+        .counter-section.show {
+            display: block;
+        }
+        
+        .counter-label {
+            font-size: 2rem;
+            color: #9ca3af;
+            margin-bottom: 2rem;
+        }
+        
+        .counter-number {
+            font-size: 6rem;
+            font-weight: bold;
+            color: #ef4444;
+            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
+            line-height: 1;
+        }
+        
+        .heart {
+            color: #ef4444;
+            font-size: 2rem;
+            animation: heartbeat 1s infinite;
+            margin: 0 0.2em;
+        }
+        
+        @keyframes heartbeat {
+            0%, 50%, 100% { transform: scale(1); }
+            25%, 75% { transform: scale(1.2); }
+        }
+        
+        .counter-unit {
+            font-size: 2.5rem;
+            color: #9ca3af;
+            margin-bottom: 3rem;
+        }
+        
+        .stats {
+            margin-bottom: 3rem;
+        }
+        
+        .stat-line {
+            font-size: 1.2rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-number {
+            color: #fca5a5;
+            font-weight: bold;
+        }
+        
+        .reset-btn {
+            background-color: #374151;
+            color: #fca5a5;
+            border: 1px solid #ef4444;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .reset-btn:hover {
+            background-color: #4b5563;
+        }
+        
+        @media (max-width: 768px) {
+            .title { font-size: 2rem; }
+            .counter-number { font-size: 4rem; }
+            .counter-unit { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="input-section" class="input-section">
+            <h1 class="title">CONTATORE GIORNI VISSUTI</h1>
+            <p class="subtitle">Inserisci la tua data di nascita</p>
+            <div>
+                <input type="date" id="birthdate" class="date-input">
+                <br>
+                <button onclick="startCounter()" id="startBtn" class="start-btn" disabled>
+                    AVVIA CONTATORE
+                </button>
+            </div>
+        </div>
+        
+        <div id="counter-section" class="counter-section">
+            <p class="counter-label">HAI VISSUTO</p>
+            <div id="counter-display" class="counter-number">0</div>
+            <p class="counter-unit">GIORNI</p>
+            
+            <div class="stats">
+                <p class="stat-line">
+                    Equivalenti a <span id="weeks" class="stat-number">0</span> settimane
+                </p>
+                <p class="stat-line">
+                    Equivalenti a <span id="years" class="stat-number">0</span> anni
+                </p>
+                <p class="stat-line">
+                    Equivalenti a <span id="hours" class="stat-number">0</span> ore
+                </p>
+            </div>
+            
+            <button onclick="resetCounter()" class="reset-btn">
+                RICOMINCIA
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let targetDays = 0;
+        let currentCount = 0;
+        let animationRunning = false;
+
+        // Abilita il pulsante quando viene inserita una data
+        document.getElementById('birthdate').addEventListener('change', function() {
+            const btn = document.getElementById('startBtn');
+            btn.disabled = !this.value;
+        });
+
+        function calculateDays(birthdate) {
+            const birthDate = new Date(birthdate);
+            const today = new Date();
+            const msInDay = 1000 * 60 * 60 * 24;
+            return Math.floor((today - birthDate) / msInDay);
+        }
+
+        function formatNumberWithHeart(num) {
+            const formatted = new Intl.NumberFormat('it-IT').format(num);
+            return formatted.replace(/\./g, '<span class="heart">♥</span>');
+        }
+
+        function updateStats(days) {
+            document.getElementById('weeks').textContent = 
+                new Intl.NumberFormat('it-IT').format(Math.floor(days / 7));
+            document.getElementById('years').textContent = 
+                new Intl.NumberFormat('it-IT').format(Math.floor(days / 365.25));
+            document.getElementById('hours').textContent = 
+                new Intl.NumberFormat('it-IT').format(days * 24);
+        }
+
+        function animateCounter() {
+            if (animationRunning) return;
+            animationRunning = true;
+            
+            const duration = 3000; // 3 secondi
+            const increment = Math.ceil(targetDays / (duration / 50));
+            currentCount = 0;
+            
+            const timer = setInterval(() => {
+                currentCount += increment;
+                if (currentCount >= targetDays) {
+                    currentCount = targetDays;
+                    clearInterval(timer);
+                    animationRunning = false;
+                }
+                
+                document.getElementById('counter-display').innerHTML = 
+                    formatNumberWithHeart(currentCount);
+                updateStats(currentCount);
+            }, 50);
+        }
+
+        function startCounter() {
+            const birthdate = document.getElementById('birthdate').value;
+            if (!birthdate) return;
+            
+            targetDays = calculateDays(birthdate);
+            
+            // Nascondi sezione input e mostra contatore
+            document.getElementById('input-section').style.display = 'none';
+            document.getElementById('counter-section').classList.add('show');
+            
+            // Avvia animazione
+            animateCounter();
+        }
+
+        function resetCounter() {
+            // Mostra sezione input e nascondi contatore
+            document.getElementById('input-section').style.display = 'block';
+            document.getElementById('counter-section').classList.remove('show');
+            
+            // Reset valori
+            document.getElementById('birthdate').value = '';
+            document.getElementById('startBtn').disabled = true;
+            targetDays = 0;
+            currentCount = 0;
+            animationRunning = false;
+        }
+    </script>
+</body>
+</html>
