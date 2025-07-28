@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contatore Giorni Vissuti</title>
+    <title>Days Counter Screensaver</title>
     <style>
         * {
             margin: 0;
@@ -12,110 +12,68 @@
         }
         
         body {
-            background-color: #000;
+            background: linear-gradient(45deg, #000000, #1a0000, #000000, #0a0000);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
             color: #fff;
             font-family: 'Courier New', monospace;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            overflow: hidden;
+            cursor: none;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         
         .container {
             text-align: center;
-            max-width: 800px;
-            width: 100%;
+            opacity: 0;
+            animation: fadeIn 3s ease-in forwards;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        .date-display {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 2rem;
+            letter-spacing: 0.2em;
         }
         
         .title {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #ef4444;
-            margin-bottom: 2rem;
-        }
-        
-        .subtitle {
-            font-size: 1.5rem;
-            color: #9ca3af;
-            margin-bottom: 3rem;
-        }
-        
-        .input-section {
-            margin-bottom: 3rem;
-        }
-        
-        .date-input {
-            background-color: #1f2937;
-            border: 2px solid #ef4444;
-            color: #fca5a5;
-            padding: 1rem 2rem;
-            font-size: 1.5rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            font-family: 'Courier New', monospace;
-        }
-        
-        .date-input:focus {
-            outline: none;
-            border-color: #f87171;
-        }
-        
-        .start-btn {
-            background-color: #dc2626;
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            font-size: 1.5rem;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Courier New', monospace;
-        }
-        
-        .start-btn:hover {
-            background-color: #b91c1c;
-            transform: scale(1.05);
-        }
-        
-        .start-btn:disabled {
-            background-color: #374151;
-            color: #6b7280;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .counter-section {
-            display: none;
-        }
-        
-        .counter-section.show {
-            display: block;
-        }
-        
-        .counter-label {
-            font-size: 2rem;
-            color: #9ca3af;
-            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            color: #888;
+            margin-bottom: 1rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
         }
         
         .counter-number {
-            font-size: 6rem;
+            font-size: 8rem;
             font-weight: bold;
-            color: #ef4444;
-            margin-bottom: 1rem;
+            color: #ff4444;
+            margin: 2rem 0;
             letter-spacing: 0.1em;
-            line-height: 1;
         }
         
         .heart {
-            color: #ef4444;
-            font-size: 2rem;
+            color: #ff4444;
+            font-size: 4rem;
             display: inline-block;
-            animation: heartbeat 0.8s ease-in-out infinite;
-            margin: 0 0.3em;
-            text-shadow: 0 0 10px #ef4444;
+            animation: heartbeat 1.2s ease-in-out infinite;
+            margin: 0 0.2em;
+            text-shadow: 
+                0 0 15px #ff4444,
+                0 0 30px #ff2222;
+            filter: drop-shadow(0 0 10px #ff4444);
         }
         
         @keyframes heartbeat {
@@ -123,17 +81,21 @@
                 transform: scale(1);
                 opacity: 1;
             }
-            25% { 
-                transform: scale(1.3);
-                opacity: 0.8;
+            15% { 
+                transform: scale(1.4);
+                opacity: 0.7;
             }
-            50% { 
+            30% { 
                 transform: scale(1);
                 opacity: 1;
             }
-            75% { 
-                transform: scale(1.15);
-                opacity: 0.9;
+            45% { 
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+            60% { 
+                transform: scale(1);
+                opacity: 1;
             }
             100% { 
                 transform: scale(1);
@@ -141,125 +103,154 @@
             }
         }
         
-        .counter-unit {
-            font-size: 2.5rem;
-            color: #9ca3af;
+        .unit {
+            font-size: 2rem;
+            color: #666;
             margin-bottom: 3rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
         }
         
         .stats {
-            margin-bottom: 3rem;
-        }
-        
-        .stat-line {
             font-size: 1.2rem;
-            color: #6b7280;
-            margin-bottom: 1rem;
+            color: #555;
+            line-height: 2;
+            letter-spacing: 0.1em;
         }
         
-        .stat-number {
-            color: #fca5a5;
+        .stat-highlight {
+            color: #ff6666;
             font-weight: bold;
+            text-shadow: 0 0 10px #ff6666;
         }
         
-        .reset-btn {
-            background-color: #374151;
-            color: #fca5a5;
-            border: 1px solid #ef4444;
-            padding: 1rem 2rem;
+        .time-display {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            font-size: 1.5rem;
+            color: #333;
+            letter-spacing: 0.2em;
+        }
+        
+        .birthdate-display {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
             font-size: 1.2rem;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Courier New', monospace;
+            color: #333;
+            letter-spacing: 0.1em;
         }
         
-        .reset-btn:hover {
-            background-color: #4b5563;
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
         }
         
-        @media (max-width: 768px) {
-            .title { font-size: 2rem; }
-            .counter-number { font-size: 4rem; }
-            .counter-unit { font-size: 2rem; }
+        .floating-heart {
+            position: absolute;
+            color: rgba(255, 68, 68, 0.1);
+            font-size: 2rem;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="floating-hearts"></div>
+    
+    <div class="time-display" id="currentTime"></div>
+    
     <div class="container">
-        <div id="input-section" class="input-section">
-            <h1 class="title">CONTATORE GIORNI VISSUTI</h1>
-            <p class="subtitle">Inserisci la tua data di nascita</p>
-            <div>
-                <input type="date" id="birthdate" class="date-input">
-                <br>
-                <button onclick="startCounter()" id="startBtn" class="start-btn" disabled>
-                    AVVIA CONTATORE
-                </button>
-            </div>
-        </div>
+        <div class="date-display" id="currentDate"></div>
+        <div class="title">Giorni Vissuti</div>
+        <div id="counter-display" class="counter-number">0</div>
+        <div class="unit">Giorni</div>
         
-        <div id="counter-section" class="counter-section">
-            <p class="counter-label">HAI VISSUTO</p>
-            <div id="counter-display" class="counter-number">0</div>
-            <p class="counter-unit">GIORNI</p>
-            
-            <div class="stats">
-                <p class="stat-line">
-                    Equivalenti a <span id="weeks" class="stat-number">0</span> settimane
-                </p>
-                <p class="stat-line">
-                    Equivalenti a <span id="years" class="stat-number">0</span> anni
-                </p>
-                <p class="stat-line">
-                    Equivalenti a <span id="hours" class="stat-number">0</span> ore
-                </p>
-            </div>
-            
-            <button onclick="resetCounter()" class="reset-btn">
-                RICOMINCIA
-            </button>
+        <div class="stats">
+            <div>≈ <span id="weeks" class="stat-highlight">0</span> settimane di vita</div>
+            <div>≈ <span id="years" class="stat-highlight">0</span> anni di esperienze</div>
+            <div>≈ <span id="hours" class="stat-highlight">0</span> ore di esistenza</div>
+            <div>≈ <span id="heartbeats" class="stat-highlight">0</span> battiti del cuore</div>
         </div>
     </div>
+    
+    <div class="birthdate-display" id="birthdateDisplay"></div>
 
     <script>
-        let targetDays = 0;
+        // Data di nascita: 2 Agosto 1982
+        const BIRTHDATE = '1982-08-02';
+        
         let currentCount = 0;
-        let animationRunning = false;
-
-        // Abilita il pulsante quando viene inserita una data
-        document.getElementById('birthdate').addEventListener('change', function() {
-            const btn = document.getElementById('startBtn');
-            btn.disabled = !this.value;
-        });
-
+        let targetDays = 0;
+        
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('it-IT');
+            const dateString = now.toLocaleDateString('it-IT', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            document.getElementById('currentTime').textContent = timeString;
+            document.getElementById('currentDate').textContent = dateString;
+        }
+        
         function calculateDays(birthdate) {
             const birthDate = new Date(birthdate);
             const today = new Date();
             const msInDay = 1000 * 60 * 60 * 24;
             return Math.floor((today - birthDate) / msInDay);
         }
-
+        
         function formatNumberWithHeart(num) {
             const formatted = new Intl.NumberFormat('it-IT').format(num);
             return formatted.replace(/\./g, '<span class="heart">❤️</span>');
         }
-
+        
         function updateStats(days) {
-            document.getElementById('weeks').textContent = 
-                new Intl.NumberFormat('it-IT').format(Math.floor(days / 7));
-            document.getElementById('years').textContent = 
-                new Intl.NumberFormat('it-IT').format(Math.floor(days / 365.25));
-            document.getElementById('hours').textContent = 
-                new Intl.NumberFormat('it-IT').format(days * 24);
-        }
-
-        function animateCounter() {
-            if (animationRunning) return;
-            animationRunning = true;
+            const weeks = Math.floor(days / 7);
+            const years = Math.floor(days / 365.25);
+            const hours = days * 24;
+            const heartbeats = Math.floor(days * 24 * 60 * 70); // ~70 bpm
             
-            const duration = 3000; // 3 secondi
-            const increment = Math.ceil(targetDays / (duration / 50));
+            document.getElementById('weeks').textContent = 
+                new Intl.NumberFormat('it-IT').format(weeks);
+            document.getElementById('years').textContent = 
+                new Intl.NumberFormat('it-IT').format(years);
+            document.getElementById('hours').textContent = 
+                new Intl.NumberFormat('it-IT').format(hours);
+            document.getElementById('heartbeats').textContent = 
+                new Intl.NumberFormat('it-IT').format(heartbeats);
+        }
+        
+        function animateCounter() {
+            const duration = 5000; // 5 secondi
+            const increment = Math.ceil(targetDays / (duration / 100));
             currentCount = 0;
             
             const timer = setInterval(() => {
@@ -267,41 +258,73 @@
                 if (currentCount >= targetDays) {
                     currentCount = targetDays;
                     clearInterval(timer);
-                    animationRunning = false;
                 }
                 
                 document.getElementById('counter-display').innerHTML = 
                     formatNumberWithHeart(currentCount);
                 updateStats(currentCount);
-            }, 50);
+            }, 100);
         }
-
-        function startCounter() {
-            const birthdate = document.getElementById('birthdate').value;
-            if (!birthdate) return;
+        
+        function createFloatingHearts() {
+            const container = document.querySelector('.floating-hearts');
             
-            targetDays = calculateDays(birthdate);
-            
-            // Nascondi sezione input e mostra contatore
-            document.getElementById('input-section').style.display = 'none';
-            document.getElementById('counter-section').classList.add('show');
-            
-            // Avvia animazione
-            animateCounter();
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.textContent = '❤️';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                heart.style.fontSize = (Math.random() * 2 + 1) + 'rem';
+                
+                container.appendChild(heart);
+                
+                // Rimuovi dopo l'animazione
+                setTimeout(() => {
+                    if (heart.parentNode) {
+                        heart.parentNode.removeChild(heart);
+                    }
+                }, 15000);
+            }, 2000);
         }
-
-        function resetCounter() {
-            // Mostra sezione input e nascondi contatore
-            document.getElementById('input-section').style.display = 'block';
-            document.getElementById('counter-section').classList.remove('show');
+        
+        function init() {
+            // Calcola giorni
+            targetDays = calculateDays(BIRTHDATE);
             
-            // Reset valori
-            document.getElementById('birthdate').value = '';
-            document.getElementById('startBtn').disabled = true;
-            targetDays = 0;
-            currentCount = 0;
-            animationRunning = false;
+            // Mostra data di nascita
+            const birthDate = new Date(BIRTHDATE);
+            const birthString = birthDate.toLocaleDateString('it-IT', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('birthdateDisplay').textContent = 'Nato il ' + birthString;
+            
+            // Avvia animazioni
+            setTimeout(() => {
+                animateCounter();
+                createFloatingHearts();
+            }, 2000);
+            
+            // Updates continui
+            updateTime();
+            setInterval(updateTime, 1000);
+            
+            // Ricalcola giorni ogni ora
+            setInterval(() => {
+                targetDays = calculateDays(BIRTHDATE);
+                document.getElementById('counter-display').innerHTML = 
+                    formatNumberWithHeart(targetDays);
+                updateStats(targetDays);
+            }, 3600000);
         }
+        
+        // Avvia quando la pagina è caricata
+        window.addEventListener('load', init);
+        
+        // Previeni il context menu
+        document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
 </html>
