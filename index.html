@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Days Counter Screensaver</title>
     <style>
+        /* Stili rimangono uguali */
         * {
             margin: 0;
             padding: 0;
@@ -22,7 +23,6 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            cursor: none;
         }
         
         @keyframes gradientShift {
@@ -40,22 +40,7 @@
         @keyframes fadeIn {
             to { opacity: 1; }
         }
-        
-        .date-display {
-            font-size: 1.5rem;
-            color: #666;
-            margin-bottom: 2rem;
-            letter-spacing: 0.2em;
-        }
-        
-        .title {
-            font-size: 2.5rem;
-            color: #888;
-            margin-bottom: 1rem;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-        }
-        
+
         .counter-number {
             font-size: 8rem;
             font-weight: bold;
@@ -63,44 +48,23 @@
             margin: 2rem 0;
             letter-spacing: 0.1em;
         }
-        
+
         .heart {
+            display: inline-block;
             color: #ff4444;
             font-size: 4rem;
-            display: inline-block;
             animation: heartbeat 1.2s ease-in-out infinite;
-            margin: 0 0.2em;
             text-shadow: 
                 0 0 15px #ff4444,
                 0 0 30px #ff2222;
-            filter: drop-shadow(0 0 10px #ff4444);
         }
-        
+
         @keyframes heartbeat {
-            0% { 
-                transform: scale(1);
-                opacity: 1;
-            }
-            15% { 
-                transform: scale(1.4);
-                opacity: 0.7;
-            }
-            30% { 
-                transform: scale(1);
-                opacity: 1;
-            }
-            45% { 
-                transform: scale(1.2);
-                opacity: 0.8;
-            }
-            60% { 
-                transform: scale(1);
-                opacity: 1;
-            }
-            100% { 
-                transform: scale(1);
-                opacity: 1;
-            }
+            0% { transform: scale(1); }
+            30% { transform: scale(1.3); }
+            50% { transform: scale(1); }
+            70% { transform: scale(1.3); }
+            100% { transform: scale(1); }
         }
         
         .unit {
@@ -110,221 +74,28 @@
             letter-spacing: 0.5em;
             text-transform: uppercase;
         }
-        
-        .stats {
-            font-size: 1.2rem;
-            color: #555;
-            line-height: 2;
-            letter-spacing: 0.1em;
-        }
-        
-        .stat-highlight {
-            color: #ff6666;
-            font-weight: bold;
-            text-shadow: 0 0 10px #ff6666;
-        }
-        
-        .time-display {
-            position: absolute;
-            top: 40px;
-            right: 40px;
-            font-size: 1.5rem;
-            color: #333;
-            letter-spacing: 0.2em;
-        }
-        
-        .birthdate-display {
-            position: absolute;
-            bottom: 40px;
-            left: 40px;
-            font-size: 1.2rem;
-            color: #333;
-            letter-spacing: 0.1em;
-        }
-        
-        .floating-hearts {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: -1;
-        }
-        
-        .floating-heart {
-            position: absolute;
-            color: rgba(255, 68, 68, 0.1);
-            font-size: 2rem;
-            animation: float 15s infinite linear;
-        }
-        
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.6;
-            }
-            90% {
-                opacity: 0.6;
-            }
-            100% {
-                transform: translateY(-100px) rotate(360deg);
-                opacity: 0;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="floating-hearts"></div>
-    
-    <div class="time-display" id="currentTime"></div>
-    
     <div class="container">
-        <div class="date-display" id="currentDate"></div>
         <div class="title">Giorni Vissuti</div>
         <div id="counter-display" class="counter-number">0</div>
         <div class="unit">Giorni</div>
-        
-        <div class="stats">
-            <div>≈ <span id="weeks" class="stat-highlight">0</span> settimane di vita</div>
-            <div>≈ <span id="years" class="stat-highlight">0</span> anni di esperienze</div>
-            <div>≈ <span id="hours" class="stat-highlight">0</span> ore di esistenza</div>
-            <div>≈ <span id="heartbeats" class="stat-highlight">0</span> battiti del cuore</div>
-        </div>
     </div>
-    
-    <div class="birthdate-display" id="birthdateDisplay"></div>
 
     <script>
-        // Data di nascita: 2 Agosto 1982
-        const BIRTHDATE = '1982-08-02';
-        
-        let currentCount = 0;
-        let targetDays = 0;
-        
-        function updateTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('it-IT');
-            const dateString = now.toLocaleDateString('it-IT', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            
-            document.getElementById('currentTime').textContent = timeString;
-            document.getElementById('currentDate').textContent = dateString;
-        }
-        
-        function calculateDays(birthdate) {
-            const birthDate = new Date(birthdate);
-            const today = new Date();
-            const msInDay = 1000 * 60 * 60 * 24;
-            return Math.floor((today - birthDate) / msInDay);
-        }
-        
         function formatNumberWithHeart(num) {
             const formatted = new Intl.NumberFormat('it-IT').format(num);
             return formatted.replace(/\./g, '<span class="heart">❤️</span>');
         }
-        
-        function updateStats(days) {
-            const weeks = Math.floor(days / 7);
-            const years = Math.floor(days / 365.25);
-            const hours = days * 24;
-            const heartbeats = Math.floor(days * 24 * 60 * 70); // ~70 bpm
-            
-            document.getElementById('weeks').textContent = 
-                new Intl.NumberFormat('it-IT').format(weeks);
-            document.getElementById('years').textContent = 
-                new Intl.NumberFormat('it-IT').format(years);
-            document.getElementById('hours').textContent = 
-                new Intl.NumberFormat('it-IT').format(hours);
-            document.getElementById('heartbeats').textContent = 
-                new Intl.NumberFormat('it-IT').format(heartbeats);
-        }
-        
+
         function animateCounter() {
-            const duration = 5000; // 5 secondi
-            const increment = Math.ceil(targetDays / (duration / 100));
-            currentCount = 0;
-            
-            const timer = setInterval(() => {
-                currentCount += increment;
-                if (currentCount >= targetDays) {
-                    currentCount = targetDays;
-                    clearInterval(timer);
-                }
-                
-                document.getElementById('counter-display').innerHTML = 
-                    formatNumberWithHeart(currentCount);
-                updateStats(currentCount);
-            }, 100);
+            const targetDays = 12345; // esempio di giorni vissuti
+            document.getElementById('counter-display').innerHTML = 
+                formatNumberWithHeart(targetDays);
         }
-        
-        function createFloatingHearts() {
-            const container = document.querySelector('.floating-hearts');
-            
-            setInterval(() => {
-                const heart = document.createElement('div');
-                heart.className = 'floating-heart';
-                heart.textContent = '❤️';
-                heart.style.left = Math.random() * 100 + '%';
-                heart.style.animationDelay = Math.random() * 5 + 's';
-                heart.style.fontSize = (Math.random() * 2 + 1) + 'rem';
-                
-                container.appendChild(heart);
-                
-                // Rimuovi dopo l'animazione
-                setTimeout(() => {
-                    if (heart.parentNode) {
-                        heart.parentNode.removeChild(heart);
-                    }
-                }, 15000);
-            }, 2000);
-        }
-        
-        function init() {
-            // Calcola giorni
-            targetDays = calculateDays(BIRTHDATE);
-            
-            // Mostra data di nascita
-            const birthDate = new Date(BIRTHDATE);
-            const birthString = birthDate.toLocaleDateString('it-IT', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            document.getElementById('birthdateDisplay').textContent = 'Nato il ' + birthString;
-            
-            // Avvia animazioni
-            setTimeout(() => {
-                animateCounter();
-                createFloatingHearts();
-            }, 2000);
-            
-            // Updates continui
-            updateTime();
-            setInterval(updateTime, 1000);
-            
-            // Ricalcola giorni ogni ora
-            setInterval(() => {
-                targetDays = calculateDays(BIRTHDATE);
-                document.getElementById('counter-display').innerHTML = 
-                    formatNumberWithHeart(targetDays);
-                updateStats(targetDays);
-            }, 3600000);
-        }
-        
-        // Avvia quando la pagina è caricata
-        window.addEventListener('load', init);
-        
-        // Previeni il context menu
-        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        window.addEventListener('load', animateCounter);
     </script>
 </body>
 </html>
