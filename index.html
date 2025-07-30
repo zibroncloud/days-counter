@@ -41,6 +41,28 @@
             to { opacity: 1; }
         }
 
+        .form-container {
+            margin-bottom: 2rem;
+        }
+
+        .input-date {
+            padding: 0.5em;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+        
+        .submit-date {
+            padding: 0.5em;
+            font-size: 1rem;
+            border: none;
+            background-color: #ff4444;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
         .counter-number {
             font-size: 8rem;
             font-weight: bold;
@@ -78,24 +100,59 @@
 </head>
 <body>
     <div class="container">
+        <div class="form-container">
+            <label for="birthdate">Inserisci la tua data di nascita:</label>
+            <input type="date" id="birthdate" class="input-date">
+            <button id="submitDate" class="submit-date">Calcola</button>
+        </div>
         <div class="title">Giorni Vissuti</div>
         <div id="counter-display" class="counter-number">0</div>
         <div class="unit">Giorni</div>
     </div>
 
     <script>
+        function calculateDays(birthdate) {
+            const birthDate = new Date(birthdate);
+            const today = new Date();
+            const msInDay = 1000 * 60 * 60 * 24;
+            return Math.floor((today - birthDate) / msInDay);
+        }
+
         function formatNumberWithHeart(num) {
             const formatted = new Intl.NumberFormat('it-IT').format(num);
             return formatted.replace(/\./g, '<span class="heart">❤️</span>');
         }
 
-        function animateCounter() {
-            const targetDays = 12345; // esempio di giorni vissuti
-            document.getElementById('counter-display').innerHTML = 
-                formatNumberWithHeart(targetDays);
+        function animateCounter(days) {
+            const duration = 5000; // 5 secondi
+            const increment = Math.ceil(days / (duration / 100));
+            let currentCount = 0;
+
+            const timer = setInterval(() => {
+                currentCount += increment;
+                if (currentCount >= days) {
+                    currentCount = days;
+                    clearInterval(timer);
+                }
+                
+                document.getElementById('counter-display').innerHTML = 
+                    formatNumberWithHeart(currentCount);
+            }, 100);
         }
 
-        window.addEventListener('load', animateCounter);
+        function init() {
+            document.getElementById('submitDate').addEventListener('click', function() {
+                const birthdate = document.getElementById('birthdate').value;
+                if (birthdate) {
+                    const days = calculateDays(birthdate);
+                    animateCounter(days);
+                } else {
+                    alert('Per favore, inserisci una data valida.');
+                }
+            });
+        }
+
+        window.addEventListener('load', init);
     </script>
 </body>
 </html>
